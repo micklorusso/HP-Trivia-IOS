@@ -12,7 +12,7 @@ struct ContentView: View {
     @State private var audioPlayer: AVAudioPlayer!
     @State var scaleButton = false
     @State var moveBackgroundImage = false
-    @State var showViews = false
+    @State var animateViewsIn = false
     @State var showInstructions = false
     @State var showSettings = false
     @State var showGameplay = false
@@ -35,7 +35,7 @@ struct ContentView: View {
                 VStack {
                     
                     VStack {
-                        if showViews {
+                        if animateViewsIn {
                             VStack {
                                 Image(systemName: "bolt.fill")
                                     .font(.largeTitle)
@@ -48,12 +48,12 @@ struct ContentView: View {
                                     .padding(.top, -70)
                             }.transition(.offset(y: -geo.size.height / 3))
                         }
-                    }.animation(.easeOut(duration: 0.7).delay(2), value: showViews)
+                    }.animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
                     
                     Spacer()
                     
                     VStack {
-                        if showViews {
+                        if animateViewsIn {
                             VStack {
                                 Text("Recent Scores:")
                                 Text("33")
@@ -66,7 +66,7 @@ struct ContentView: View {
                             .foregroundStyle(.white)
                             .transition(.opacity)
                         }
-                    }.animation(.linear(duration: 1).delay(4), value: showViews)
+                    }.animation(.linear(duration: 1).delay(4), value: animateViewsIn)
                     
                     Spacer()
                     
@@ -74,7 +74,7 @@ struct ContentView: View {
                         Spacer()
                         
                         VStack {
-                            if showViews {
+                            if animateViewsIn {
                                 Button {
                                     showInstructions = true
                                 } label: {
@@ -83,11 +83,11 @@ struct ContentView: View {
                                         .transition(.offset(x: -geo.size.width / 3))
                                 }
                             }
-                        }.animation(.easeOut(duration: 0.7).delay(2.7), value: showViews)
+                        }.animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
                         
                         Spacer()
                         VStack {
-                            if showViews {
+                            if animateViewsIn {
                                 Button {
                                     showGameplay = true
                                 } label: {
@@ -106,12 +106,12 @@ struct ContentView: View {
                                     }
                                 }.transition(.offset(y: geo.size.height / 3))
                             }
-                        }.animation(.easeOut(duration: 0.7).delay(2), value: showViews)
+                        }.animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
                         
                         Spacer()
                         
                         VStack {
-                            if showViews {
+                            if animateViewsIn {
                                 Button {
                                     showSettings = true
                                 } label: {
@@ -120,7 +120,7 @@ struct ContentView: View {
                                         .transition(.offset(x: geo.size.width / 3))
                                 }
                             }
-                        }.animation(.easeOut(duration: 0.7).delay(2.7), value: showViews)
+                        }.animation(.easeOut(duration: 0.7).delay(2.7), value: animateViewsIn)
                         Spacer()
                     }.frame(width: geo.size.width)
                         .foregroundStyle(.white)
@@ -129,7 +129,7 @@ struct ContentView: View {
             }.frame(width: geo.size.width, height: geo.size.height)
         }.onAppear {
 //            playAudio()
-            showViews = true
+            animateViewsIn = true
         }
         .sheet(isPresented: $showInstructions) {
             Instructions()

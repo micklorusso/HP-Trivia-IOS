@@ -10,7 +10,6 @@ import SwiftUICore
 
 enum Constants {
     static let hpFont = "PartyLetPlain"
-
 }
 
 struct ParchmentBackground: View {
