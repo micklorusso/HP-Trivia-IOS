@@ -14,6 +14,7 @@ struct ContentView: View {
     @State var moveBackgroundImage = false
     @State var showViews = false
     @State var showInstructions = false
+    @State var showSettings = false
     
     var body: some View {
         GeometryReader { geo in
@@ -110,9 +111,13 @@ struct ContentView: View {
                         
                         VStack {
                             if showViews {
-                                Image(systemName: "gearshape.fill")
-                                    .font(.largeTitle)
-                                    .transition(.offset(x: geo.size.width / 3))
+                                Button {
+                                    showSettings = true
+                                } label: {
+                                    Image(systemName: "gearshape.fill")
+                                        .font(.largeTitle)
+                                        .transition(.offset(x: geo.size.width / 3))
+                                }
                             }
                         }.animation(.easeOut(duration: 0.7).delay(2.7), value: showViews)
                         Spacer()
@@ -127,6 +132,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showInstructions) {
             Instructions()
+        }
+        .sheet(isPresented: $showSettings) {
+            Settings()
         }
      
     }
