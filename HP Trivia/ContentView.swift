@@ -15,6 +15,7 @@ struct ContentView: View {
     @State var showViews = false
     @State var showInstructions = false
     @State var showSettings = false
+    @State var showGameplay = false
     
     var body: some View {
         GeometryReader { geo in
@@ -88,7 +89,7 @@ struct ContentView: View {
                         VStack {
                             if showViews {
                                 Button {
-                                    
+                                    showGameplay = true
                                 } label: {
                                     Text("Play")
                                         .foregroundColor(.white)
@@ -135,6 +136,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showSettings) {
             Settings()
+        }
+        .fullScreenCover(isPresented: $showGameplay) {
+            Gameplay()
         }
      
     }
