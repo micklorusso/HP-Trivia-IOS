@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var audioPlayer: AVAudioPlayer!
     @State var scaleButton = false
     @State var moveBackgroundImage = false
+    @State var showViews = false
     
     var body: some View {
         GeometryReader { geo in
@@ -30,58 +31,85 @@ struct ContentView: View {
                 
                 VStack {
                     
-                    Image(systemName: "bolt.fill")
-                        .font(.largeTitle)
-                        .imageScale(.large)
-                    Text("HP")
-                        .font(.custom(Constants.hpFont, size: 80))
-                        
-                    Text("Trivia")
-                        .font(.custom(Constants.hpFont, size: 60))
-                        .padding(.top, -70)
+                    VStack {
+                        if showViews {
+                            VStack {
+                                Image(systemName: "bolt.fill")
+                                    .font(.largeTitle)
+                                    .imageScale(.large)
+                                Text("HP")
+                                    .font(.custom(Constants.hpFont, size: 80))
+                                
+                                Text("Trivia")
+                                    .font(.custom(Constants.hpFont, size: 60))
+                                    .padding(.top, -70)
+                            }.transition(.offset(y: -geo.size.height / 3))
+                        }
+                    }.animation(.easeOut(duration: 0.7).delay(2), value: showViews)
                     
                     Spacer()
                     
                     VStack {
-                        Text("Recent Scores:")
-                        Text("33")
-                        Text("27")
-                        Text("15")
-                    }
-                    .padding()
-                    .background(.black.opacity(0.5))
-                    .cornerRadius(10)
-                    .foregroundStyle(.white)
+                        if showViews {
+                            VStack {
+                                Text("Recent Scores:")
+                                Text("33")
+                                Text("27")
+                                Text("15")
+                            }
+                            .padding()
+                            .background(.black.opacity(0.5))
+                            .cornerRadius(10)
+                            .foregroundStyle(.white)
+                            .transition(.opacity)
+                        }
+                    }.animation(.linear(duration: 1).delay(4), value: showViews)
                     
                     Spacer()
                     
                     HStack {
                         Spacer()
-                        Image(systemName: "info.circle.fill")
-                            .font(.largeTitle)
-                        Spacer()
-                        Button {
-                            
-                        } label: {
-                            Text("Play")
-                                .foregroundColor(.white)
-                                .font(.title)
-                                .padding(.horizontal, 30)
-                                .padding(.vertical, 5)
-                                .background(.brown)
-                                .cornerRadius(7)
-                        }
-                        .scaleEffect(scaleButton ? 1.2 : 1)
-                        .onAppear {
-                            withAnimation(.easeInOut(duration: 1).repeatForever()) {
-                                scaleButton.toggle()
+                        
+                        VStack {
+                            if showViews {
+                                Image(systemName: "info.circle.fill")
+                                    .font(.largeTitle)
+                                    .transition(.offset(x: -geo.size.width / 3))
                             }
-                        }
+                        }.animation(.easeOut(duration: 0.7).delay(2.7), value: showViews)
+                        
+                        Spacer()
+                        VStack {
+                            if showViews {
+                                Button {
+                                    
+                                } label: {
+                                    Text("Play")
+                                        .foregroundColor(.white)
+                                        .font(.title)
+                                        .padding(.horizontal, 30)
+                                        .padding(.vertical, 5)
+                                        .background(.brown)
+                                        .cornerRadius(7)
+                                }
+                                .scaleEffect(scaleButton ? 1.2 : 1)
+                                .onAppear {
+                                    withAnimation(.easeInOut(duration: 1).repeatForever()) {
+                                        scaleButton.toggle()
+                                    }
+                                }.transition(.offset(y: geo.size.height / 3))
+                            }
+                        }.animation(.easeOut(duration: 0.7).delay(2), value: showViews)
                         
                         Spacer()
                         
-                        Image(systemName: "gearshape.fill")
-                            .font(.largeTitle)
+                        VStack {
+                            if showViews {
+                                Image(systemName: "gearshape.fill")
+                                    .font(.largeTitle)
+                                    .transition(.offset(x: geo.size.width / 3))
+                            }
+                        }.animation(.easeOut(duration: 0.7).delay(2.7), value: showViews)
                         Spacer()
                     }.frame(width: geo.size.width)
                         .foregroundStyle(.white)
@@ -90,6 +118,7 @@ struct ContentView: View {
             }.frame(width: geo.size.width, height: geo.size.height)
         }.onAppear {
 //            playAudio()
+            showViews = true
         }
      
     }
