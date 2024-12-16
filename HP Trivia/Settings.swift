@@ -76,7 +76,7 @@ struct Settings: View {
                 } label: {
                     Text("Done")
                 }.doneButton()
-            }
+            }.foregroundStyle(.black)
         }
     }
 }
