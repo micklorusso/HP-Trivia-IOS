@@ -11,6 +11,8 @@ struct QuestionsScreen: View {
     @State private var animateViewsIn = false
     @State private var hintWiggle = false
     @State private var animationTimer: Timer?
+    @State private var revealHint = false
+    @State private var revealBook = false
 
     var body: some View {
         GeometryReader { geo in
@@ -31,22 +33,39 @@ struct QuestionsScreen: View {
                     HStack {
                         VStack {
                             if animateViewsIn {
-                                Image(systemName: "questionmark.square.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 100)
-                                    .foregroundStyle(.cyan)
-                                    .padding(.leading, 30)
-                                    .transition(.offset(x: -geo.size.width / 2))
-                                    .rotationEffect(
-                                        .degrees(hintWiggle ? -13 : -17)
-                                    )
-                                    .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
-                                    .onAppear {
-                                        animationTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
-                                            hintWiggle.toggle()
+                                Button {
+                                    revealHint = true
+                                } label: {
+                                    Image(systemName: "questionmark.square.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 100)
+                                        .foregroundStyle(.cyan)
+                                        .padding(.leading, 30)
+                                        .transition(.offset(x: -geo.size.width / 2))
+                                        .rotationEffect(
+                                            .degrees(hintWiggle ? -13 : -17)
+                                        )
+                                        .rotationEffect(.degrees(revealHint ? 1440 : 0))
+                                        .scaleEffect(revealHint ? 5 : 1)
+                                        .offset(x: revealHint ? geo.size.width : 0)
+                                        .opacity(revealHint ? 0 : 1)
+                                        .overlay(content: {
+                                            Text("The Boy Who _____")
+                                                .font(.title)
+                                                .padding(.leading, 30)
+                                                .multilineTextAlignment(.center)
+                                                .minimumScaleFactor(0.5)
+                                                .opacity(revealHint ? 1 : 0)
+                                        })
+                                        .animation(.easeInOut(duration: 1), value: revealHint)
+                                        .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
+                                        .onAppear {
+                                            animationTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+                                                hintWiggle.toggle()
+                                            }
                                         }
-                                    }
+                                }
                             }
                         }.animation(
                             .easeOut(duration: 1).delay(2.3),
@@ -56,20 +75,36 @@ struct QuestionsScreen: View {
 
                         VStack {
                             if animateViewsIn {
-                                Image(systemName: "book.closed")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 50)
-                                    .foregroundStyle(.black)
-                                    .frame(width: 100, height: 100)
-                                    .background(.cyan)
-                                    .clipShape(.rect(cornerRadius: 15))
-                                    .padding(.trailing, 30)
-                                    .transition(.offset(x: geo.size.width / 2))
-                                    .rotationEffect(
-                                        .degrees(hintWiggle ? 13 : 17)
-                                    )
-                                    .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
+                                Button {
+                                    revealBook = true
+                                } label: {
+                                    Image(systemName: "book.closed")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 50)
+                                        .foregroundStyle(.black)
+                                        .frame(width: 100, height: 100)
+                                        .background(.cyan)
+                                        .clipShape(.rect(cornerRadius: 15))
+                                        .padding(.trailing, 30)
+                                        .transition(.offset(x: geo.size.width / 2))
+                                        .rotationEffect(
+                                            .degrees(hintWiggle ? 13 : 17)
+                                        )
+                                        .rotationEffect(.degrees(revealBook ? 1440 : 0))
+                                        .scaleEffect(revealBook ? 5 : 1)
+                                        .offset(x: revealBook ? -geo.size.width : 0)
+                                        .opacity(revealBook ? 0 : 1)
+                                        .overlay(content: {
+                                            Image("hp1")
+                                                .resizable()
+                                                .scaledToFit()
+                                                .frame(height: 150).padding(.trailing, 30)
+                                                .opacity(revealBook ? 1 : 0)
+                                        })
+                                        .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
+                                        .animation(.easeInOut(duration: 1), value: revealBook)
+                                }
                             }
                         }
                         .animation(

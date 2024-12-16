@@ -44,7 +44,10 @@ struct Gameplay: View {
                     .font(.title3)
                     .padding(.top, 50)
                     .padding(.bottom, 30)
-                    QuestionsScreen().frame(
+//                    QuestionsScreen().frame(
+//                        width: geo.size.width, height: geo.size.height)
+                    
+                    CelebrationScreen().frame(
                         width: geo.size.width, height: geo.size.height)
                 }.foregroundStyle(.white)
 

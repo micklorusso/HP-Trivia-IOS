@@ -15,7 +15,6 @@ struct CelebrationScreen: View {
     var body: some View {
         GeometryReader { geo in
             VStack {
-                Spacer()
                 
                 VStack {
                     if tappedCorrectAnswer {
@@ -76,6 +75,7 @@ struct CelebrationScreen: View {
                         .transition(.offset(y: geo.size.height / 2))
                     }
                 }.animation(.easeOut(duration: 1).delay(1), value: tappedCorrectAnswer)
+                Spacer()
                 Spacer()
             }.frame(width: geo.size.width, height: geo.size.height)
         }.onAppear {
