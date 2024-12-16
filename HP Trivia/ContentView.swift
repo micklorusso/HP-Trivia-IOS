@@ -13,6 +13,7 @@ struct ContentView: View {
     @State var scaleButton = false
     @State var moveBackgroundImage = false
     @State var showViews = false
+    @State var showInstructions = false
     
     var body: some View {
         GeometryReader { geo in
@@ -72,9 +73,13 @@ struct ContentView: View {
                         
                         VStack {
                             if showViews {
-                                Image(systemName: "info.circle.fill")
-                                    .font(.largeTitle)
-                                    .transition(.offset(x: -geo.size.width / 3))
+                                Button {
+                                    showInstructions = true
+                                } label: {
+                                    Image(systemName: "info.circle.fill")
+                                        .font(.largeTitle)
+                                        .transition(.offset(x: -geo.size.width / 3))
+                                }
                             }
                         }.animation(.easeOut(duration: 0.7).delay(2.7), value: showViews)
                         
@@ -119,6 +124,9 @@ struct ContentView: View {
         }.onAppear {
 //            playAudio()
             showViews = true
+        }
+        .sheet(isPresented: $showInstructions) {
+            Instructions()
         }
      
     }
