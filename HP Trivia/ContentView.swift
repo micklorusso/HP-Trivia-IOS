@@ -6,16 +6,99 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct ContentView: View {
+    @State private var audioPlayer: AVAudioPlayer!
+    @State var scaleButton = false
+    @State var moveBackgroundImage = false
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        GeometryReader { geo in
+            ZStack {
+                Image("hogwarts")
+                    .resizable()
+                    .frame(width: geo.size.width * 3,
+                           height: geo.size.height * 1.2)
+                    .padding(.top)
+                    .offset(x: moveBackgroundImage ? geo.size.width / 1.1 : -geo.size.width / 1.1)
+                    .onAppear {
+                        withAnimation(.linear(duration: 60).repeatForever()) {
+                            moveBackgroundImage.toggle()
+                        }
+                    }
+                
+                VStack {
+                    
+                    Image(systemName: "bolt.fill")
+                        .font(.largeTitle)
+                        .imageScale(.large)
+                    Text("HP")
+                        .font(.custom(Constants.hpFont, size: 80))
+                        
+                    Text("Trivia")
+                        .font(.custom(Constants.hpFont, size: 60))
+                        .padding(.top, -70)
+                    
+                    Spacer()
+                    
+                    VStack {
+                        Text("Recent Scores:")
+                        Text("33")
+                        Text("27")
+                        Text("15")
+                    }
+                    .padding()
+                    .background(.black.opacity(0.5))
+                    .cornerRadius(10)
+                    .foregroundStyle(.white)
+                    
+                    Spacer()
+                    
+                    HStack {
+                        Spacer()
+                        Image(systemName: "info.circle.fill")
+                            .font(.largeTitle)
+                        Spacer()
+                        Button {
+                            
+                        } label: {
+                            Text("Play")
+                                .foregroundColor(.white)
+                                .font(.title)
+                                .padding(.horizontal, 30)
+                                .padding(.vertical, 5)
+                                .background(.brown)
+                                .cornerRadius(7)
+                        }
+                        .scaleEffect(scaleButton ? 1.2 : 1)
+                        .onAppear {
+                            withAnimation(.easeInOut(duration: 1).repeatForever()) {
+                                scaleButton.toggle()
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "gearshape.fill")
+                            .font(.largeTitle)
+                        Spacer()
+                    }.frame(width: geo.size.width)
+                        .foregroundStyle(.white)
+                    Spacer()
+                }.frame(height: geo.size.height)
+            }.frame(width: geo.size.width, height: geo.size.height)
+        }.onAppear {
+//            playAudio()
         }
-        .padding()
+     
+    }
+    
+    func playAudio() {
+        let sound = Bundle.main.path(forResource: "magic-in-the-air", ofType: "mp3")
+        audioPlayer = try! AVAudioPlayer(contentsOf: URL(filePath: sound!))
+        audioPlayer.numberOfLoops = -1
+        audioPlayer.play()
     }
 }
 
