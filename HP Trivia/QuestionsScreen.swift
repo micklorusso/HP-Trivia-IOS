@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct QuestionsScreen: View {
-    @State var animateViewsIn = false
+    @State private var animateViewsIn = false
+    @State private var hintWiggle = false
+    @State private var animationTimer: Timer?
 
     var body: some View {
         GeometryReader { geo in
@@ -34,9 +36,17 @@ struct QuestionsScreen: View {
                                     .scaledToFit()
                                     .frame(width: 100)
                                     .foregroundStyle(.cyan)
-                                    .rotationEffect(.degrees(-15))
                                     .padding(.leading, 30)
                                     .transition(.offset(x: -geo.size.width / 2))
+                                    .rotationEffect(
+                                        .degrees(hintWiggle ? -13 : -17)
+                                    )
+                                    .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
+                                    .onAppear {
+                                        animationTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
+                                            hintWiggle.toggle()
+                                        }
+                                    }
                             }
                         }.animation(
                             .easeOut(duration: 1).delay(2.3),
@@ -54,11 +64,15 @@ struct QuestionsScreen: View {
                                     .frame(width: 100, height: 100)
                                     .background(.cyan)
                                     .clipShape(.rect(cornerRadius: 15))
-                                    .rotationEffect(.degrees(15))
                                     .padding(.trailing, 30)
                                     .transition(.offset(x: geo.size.width / 2))
+                                    .rotationEffect(
+                                        .degrees(hintWiggle ? 13 : 17)
+                                    )
+                                    .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
                             }
-                        }.animation(
+                        }
+                        .animation(
                             .easeOut(duration: 1).delay(2.3),
                             value: animateViewsIn)
                     }.frame(width: geo.size.width)

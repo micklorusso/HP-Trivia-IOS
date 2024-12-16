@@ -9,6 +9,8 @@ import SwiftUI
 
 struct CelebrationScreen: View {
     @State var tappedCorrectAnswer = false
+    @State var scaleButton = false
+    @State var moveScore = false
     
     var body: some View {
         GeometryReader { geo in
@@ -20,6 +22,13 @@ struct CelebrationScreen: View {
                         Text("5")
                             .font(.largeTitle)
                             .transition(.offset(y: -geo.size.height / 2))
+                            .offset(x: moveScore ? geo.size.width / 2 : 0, y: moveScore ? -geo.size.height / 6 : 0)
+                            .opacity(moveScore ? 0 : 1)
+                            .onAppear {
+                                withAnimation(.easeInOut(duration: 1).delay(1.8)) {
+                                    moveScore.toggle()
+                                }
+                            }
                     }
                 }.animation(.easeOut(duration: 1).delay(0.8), value: tappedCorrectAnswer)
                 Spacer()
@@ -57,6 +66,12 @@ struct CelebrationScreen: View {
                                 .padding(.vertical, 10)
                                 .background(.blue)
                                 .clipShape(.rect(cornerRadius: 10))
+                        }
+                        .scaleEffect(scaleButton ? 1.2 : 1)
+                        .onAppear {
+                            withAnimation(.easeInOut(duration: 1).repeatForever()) {
+                                scaleButton.toggle()
+                            }
                         }
                         .transition(.offset(y: geo.size.height / 2))
                     }
