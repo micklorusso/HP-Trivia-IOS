@@ -10,6 +10,7 @@ import AVKit
 
 struct ContentView: View {
     @EnvironmentObject private var store: Store
+    @EnvironmentObject private var gameViewModel: GameViewModel
     @State private var audioPlayer: AVAudioPlayer!
     @State var scaleButton = false
     @State var moveBackgroundImage = false
@@ -57,9 +58,9 @@ struct ContentView: View {
                         if animateViewsIn {
                             VStack {
                                 Text("Recent Scores:")
-                                Text("33")
-                                Text("27")
-                                Text("15")
+                                Text("\(gameViewModel.recentScores[0])")
+                                Text("\(gameViewModel.recentScores[1])")
+                                Text("\(gameViewModel.recentScores[2])")
                             }
                             .padding()
                             .background(.black.opacity(0.5))
@@ -90,6 +91,8 @@ struct ContentView: View {
                         VStack {
                             if animateViewsIn {
                                 Button {
+                                    filterQuestions()
+                                    gameViewModel.startGame()
                                     showGameplay = true
                                 } label: {
                                     Text("Play")
@@ -97,7 +100,7 @@ struct ContentView: View {
                                         .font(.title)
                                         .padding(.horizontal, 30)
                                         .padding(.vertical, 5)
-                                        .background(.brown)
+                                        .background(store.books.contains(.active) ? .brown : .gray)
                                         .cornerRadius(7)
                                 }
                                 .scaleEffect(scaleButton ? 1.2 : 1)
@@ -106,6 +109,7 @@ struct ContentView: View {
                                         scaleButton.toggle()
                                     }
                                 }.transition(.offset(y: geo.size.height / 3))
+                                    .disabled(!store.books.contains(.active))
                             }
                         }.animation(.easeOut(duration: 0.7).delay(2), value: animateViewsIn)
                         
@@ -125,6 +129,10 @@ struct ContentView: View {
                         Spacer()
                     }.frame(width: geo.size.width)
                         .foregroundStyle(.white)
+                    
+                    if !store.books.contains(.active) {
+                        Text("No questions available. Go to settings. ⬆️")
+                    }
                     Spacer()
                 }.frame(height: geo.size.height)
             }.frame(width: geo.size.width, height: geo.size.height)
@@ -150,6 +158,17 @@ struct ContentView: View {
         audioPlayer = try! AVAudioPlayer(contentsOf: URL(filePath: sound!))
         audioPlayer.numberOfLoops = -1
         audioPlayer.play()
+    }
+    
+    private func filterQuestions() {
+        var books: [Int] = []
+        for (i, bookStatus) in store.books.enumerated() {
+            if bookStatus == .active {
+                books.append(i+1)
+            }
+        }
+        
+        gameViewModel.filterQuestions(from: books)
     }
 }
 

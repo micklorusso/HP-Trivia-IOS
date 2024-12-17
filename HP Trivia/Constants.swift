@@ -10,6 +10,8 @@ import SwiftUICore
 
 enum Constants {
     static let hpFont = "PartyLetPlain"
+    
+    static let previewQuestion = try! JSONDecoder().decode([QuestionModel].self, from: Data(contentsOf: Bundle.main.url(forResource: "trivia", withExtension: "json")!))[0]
 }
 
 struct ParchmentBackground: View {
