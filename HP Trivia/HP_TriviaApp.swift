@@ -14,7 +14,7 @@ struct HP_TriviaApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(isPreview: false)
                 .environmentObject(store)
                 .environmentObject(gameViewModel)
         }
