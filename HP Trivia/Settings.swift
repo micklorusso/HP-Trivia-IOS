@@ -7,15 +7,9 @@
 
 import SwiftUI
 
-enum Status {
-    case active
-    case inactive
-    case locked
-}
-
 struct Settings: View {
     @Environment(\.dismiss) private var dismiss
-    @State var statusList: [Status] = [.active, .active, .inactive, .locked, .locked, .locked, .locked]
+    @EnvironmentObject private var store: Store
     
     var body: some View {
         ZStack {
@@ -29,7 +23,7 @@ struct Settings: View {
                 ScrollView {
                     LazyVGrid(columns: [GridItem(), GridItem()]) {
                         ForEach(0..<7) { i in
-                            if statusList[i] == .active {
+                            if store.books[i] == .active || (store.books[i] == .locked && store.purchasedProductIDs.contains("hp\(i+1)")) {
                                 ZStack(alignment: .bottomTrailing) {
                                     Image("hp\(i+1)")
                                         .resizable()
@@ -40,10 +34,12 @@ struct Settings: View {
                                         .padding(2)
                                         .shadow(radius: 3)
                                 }.onTapGesture {
-                                    statusList[i] = .inactive
+                                    store.books[i] = .inactive
                                 }
-                                
-                            } else if statusList[i] == .inactive {
+                                .task {
+                                    store.books[i] = .active
+                                }
+                            } else if store.books[i] == .inactive {
                                 ZStack(alignment: .bottomTrailing) {
                                     Image("hp\(i+1)")
                                         .resizable()
@@ -54,9 +50,9 @@ struct Settings: View {
                                         .padding(2)
                                         .shadow(radius: 3)
                                 }.onTapGesture {
-                                    statusList[i] = .active
+                                    store.books[i] = .active
                                 }
-                            } else if statusList[i] == .locked {
+                            } else if store.books[i] == .locked {
                                 ZStack {
                                     Image("hp\(i+1)")
                                         .resizable()
@@ -65,6 +61,10 @@ struct Settings: View {
                                     Image(systemName: "lock.fill").font(.largeTitle).imageScale(.large)
                                         .foregroundStyle(.black)
                                         .shadow(color: .white, radius: 3)
+                                }.onTapGesture {
+                                    Task {
+                                        await store.purchaseProduct(store.products[i-3])
+                                    }
                                 }
                             }
                         }
@@ -83,4 +83,5 @@ struct Settings: View {
 
 #Preview {
     Settings()
+        .environmentObject(Store())
 }
