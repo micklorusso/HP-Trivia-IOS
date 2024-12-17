@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct QuestionsScreen: View {
-    @State private var animateViewsIn = false
     @State private var hintWiggle = false
     @State private var animationTimer: Timer?
     @State private var revealHint = false
     @State private var revealBook = false
+    @Binding var tappedCorrectAnswer: Bool
+    @State var wrongAnswersTapped: [Int] = []
+
+    let answers: [Bool]
+    var namespace: Namespace.ID
+    var geometryID: String
+    @Binding var animateViewsIn: Bool
 
     var body: some View {
         GeometryReader { geo in
@@ -27,7 +33,7 @@ struct QuestionsScreen: View {
                                 .transition(.scale(scale: 0))
                         }
                     }.animation(
-                        .easeOut(duration: 1).delay(1), value: animateViewsIn)
+                        .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 1 : 0), value: animateViewsIn)
                     Spacer()
 
                     HStack {
@@ -36,39 +42,51 @@ struct QuestionsScreen: View {
                                 Button {
                                     revealHint = true
                                 } label: {
-                                    Image(systemName: "questionmark.square.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: 100)
-                                        .foregroundStyle(.cyan)
-                                        .padding(.leading, 30)
-                                        .transition(.offset(x: -geo.size.width / 2))
-                                        .rotationEffect(
-                                            .degrees(hintWiggle ? -13 : -17)
-                                        )
-                                        .rotationEffect(.degrees(revealHint ? 1440 : 0))
-                                        .scaleEffect(revealHint ? 5 : 1)
-                                        .offset(x: revealHint ? geo.size.width : 0)
-                                        .opacity(revealHint ? 0 : 1)
-                                        .overlay(content: {
-                                            Text("The Boy Who _____")
-                                                .font(.title)
-                                                .padding(.leading, 30)
-                                                .multilineTextAlignment(.center)
-                                                .minimumScaleFactor(0.5)
-                                                .opacity(revealHint ? 1 : 0)
-                                        })
-                                        .animation(.easeInOut(duration: 1), value: revealHint)
-                                        .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
-                                        .onAppear {
-                                            animationTimer = Timer.scheduledTimer(withTimeInterval: 10, repeats: true) { _ in
-                                                hintWiggle.toggle()
-                                            }
+                                    Image(
+                                        systemName: "questionmark.square.fill"
+                                    )
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 100)
+                                    .foregroundStyle(.cyan)
+                                    .padding(.leading, 30)
+                                    .transition(.offset(x: -geo.size.width / 2))
+                                    .rotationEffect(
+                                        .degrees(hintWiggle ? -13 : -17)
+                                    )
+                                    .rotationEffect(
+                                        .degrees(revealHint ? 1440 : 0)
+                                    )
+                                    .scaleEffect(revealHint ? 5 : 1)
+                                    .offset(x: revealHint ? geo.size.width : 0)
+                                    .opacity(revealHint ? 0 : 1)
+                                    .overlay(content: {
+                                        Text("The Boy Who _____")
+                                            .font(.title)
+                                            .padding(.leading, 30)
+                                            .multilineTextAlignment(.center)
+                                            .minimumScaleFactor(0.5)
+                                            .opacity(revealHint ? 1 : 0)
+                                    })
+                                    .animation(
+                                        .easeInOut(duration: 1),
+                                        value: revealHint
+                                    )
+                                    .animation(
+                                        .easeInOut(duration: 0.1).repeatCount(
+                                            9), value: hintWiggle
+                                    )
+                                    .onAppear {
+                                        animationTimer = Timer.scheduledTimer(
+                                            withTimeInterval: 10, repeats: true
+                                        ) { _ in
+                                            hintWiggle.toggle()
                                         }
+                                    }
                                 }
                             }
                         }.animation(
-                            .easeOut(duration: 1).delay(2.3),
+                            .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 2.3 : 0),
                             value: animateViewsIn)
 
                         Spacer()
@@ -87,28 +105,42 @@ struct QuestionsScreen: View {
                                         .background(.cyan)
                                         .clipShape(.rect(cornerRadius: 15))
                                         .padding(.trailing, 30)
-                                        .transition(.offset(x: geo.size.width / 2))
+                                        .transition(
+                                            .offset(x: geo.size.width / 2)
+                                        )
                                         .rotationEffect(
                                             .degrees(hintWiggle ? 13 : 17)
                                         )
-                                        .rotationEffect(.degrees(revealBook ? 1440 : 0))
+                                        .rotationEffect(
+                                            .degrees(revealBook ? 1440 : 0)
+                                        )
                                         .scaleEffect(revealBook ? 5 : 1)
-                                        .offset(x: revealBook ? -geo.size.width : 0)
+                                        .offset(
+                                            x: revealBook ? -geo.size.width : 0
+                                        )
                                         .opacity(revealBook ? 0 : 1)
                                         .overlay(content: {
                                             Image("hp1")
                                                 .resizable()
                                                 .scaledToFit()
-                                                .frame(height: 150).padding(.trailing, 30)
+                                                .frame(height: 150).padding(
+                                                    .trailing, 30
+                                                )
                                                 .opacity(revealBook ? 1 : 0)
                                         })
-                                        .animation(.easeInOut(duration: 0.1).repeatCount(9), value: hintWiggle)
-                                        .animation(.easeInOut(duration: 1), value: revealBook)
+                                        .animation(
+                                            .easeInOut(duration: 0.1)
+                                                .repeatCount(9),
+                                            value: hintWiggle
+                                        )
+                                        .animation(
+                                            .easeInOut(duration: 1),
+                                            value: revealBook)
                                 }
                             }
                         }
                         .animation(
-                            .easeOut(duration: 1).delay(2.3),
+                            .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 2.3 : 0),
                             value: animateViewsIn)
                     }.frame(width: geo.size.width)
 
@@ -116,26 +148,51 @@ struct QuestionsScreen: View {
                         ForEach(0..<4) { i in
                             VStack {
                                 if animateViewsIn {
-                                    Button {
 
-                                    } label: {
+                                    if answers[i] == true {
                                         Text("Answer \(i)")
                                             .padding()
                                             .padding(.vertical)
                                             .frame(width: geo.size.width / 2.2)
                                             .background(
-                                                .green.mix(
-                                                    with: .black, by: 0.25)
+                                                .green.opacity(0.5)
                                             )
                                             .clipShape(.rect(cornerRadius: 30))
                                             .font(.title3)
                                             .multilineTextAlignment(.center)
                                             .minimumScaleFactor(0.5)
                                             .transition(.scale(scale: 0))
+                                            .matchedGeometryEffect(
+                                                id: geometryID, in: namespace)
+                                            .onTapGesture {
+                                                withAnimation(.easeOut(duration: 1)) {
+                                                    tappedCorrectAnswer = true
+                                                    animateViewsIn = false
+                                                }
+                                            }
+                                    } else {
+                                        Text("Answer \(i)")
+                                            .padding()
+                                            .padding(.vertical)
+                                            .frame(width: geo.size.width / 2.2)
+                                            .background(wrongAnswersTapped.contains(i) ? .red.opacity(0.5) : .green.opacity(0.5))
+                                            .clipShape(.rect(cornerRadius: 30))
+                                            .font(.title3)
+                                            .multilineTextAlignment(.center)
+                                            .minimumScaleFactor(0.5)
+                                            .transition(.scale(scale: 0))
+                                            .scaleEffect(wrongAnswersTapped.contains(i) ? 0.8 : 1)
+                                            .onTapGesture {
+                                                withAnimation(.easeOut(duration: 1)) {
+                                                    wrongAnswersTapped.append(i)
+                                                }
+                                            }
+                                            .disabled(wrongAnswersTapped.contains(i))
                                     }
+
                                 }
                             }.animation(
-                                .easeOut(duration: 1).delay(1.5),
+                                .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 1.5 : 0),
                                 value: animateViewsIn)
 
                         }
@@ -146,12 +203,16 @@ struct QuestionsScreen: View {
                 }
             }.frame(width: geo.size.width, height: geo.size.height)
                 .foregroundStyle(.white)
-        }.onAppear {
-            animateViewsIn = true
         }
     }
 }
 
 #Preview {
-    QuestionsScreen()
+    @Previewable @Namespace var namespace
+    @Previewable @State var tappedCorrectAnswer = true
+    @Previewable @State var animateViewsIn = true
+    QuestionsScreen(
+        tappedCorrectAnswer: $tappedCorrectAnswer,
+        answers: [true, false, false, false], namespace: namespace,
+        geometryID: "correctAnswer", animateViewsIn: $animateViewsIn)
 }

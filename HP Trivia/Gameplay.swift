@@ -9,6 +9,14 @@ import SwiftUI
 
 struct Gameplay: View {
     @Environment(\.dismiss) private var dismiss
+    @Namespace private var namespace
+    
+    @State private var tappedCorrectAnswer = false
+    @State private var animateViewsIn = false
+    
+    let geometryID = "correctAnswer"
+    
+    let tempAnswers = [true, false, false, false]
 
     var body: some View {
         GeometryReader { geo in
@@ -44,11 +52,16 @@ struct Gameplay: View {
                     .font(.title3)
                     .padding(.top, 50)
                     .padding(.bottom, 30)
-//                    QuestionsScreen().frame(
-//                        width: geo.size.width, height: geo.size.height)
                     
-                    CelebrationScreen().frame(
-                        width: geo.size.width, height: geo.size.height)
+                    if tappedCorrectAnswer {
+                        CelebrationScreen(namespace: namespace, geometryID: geometryID, tappedCorrectAnswer: $tappedCorrectAnswer).frame(
+                            width: geo.size.width, height: geo.size.height)
+                    } else {
+                        QuestionsScreen(tappedCorrectAnswer: $tappedCorrectAnswer, answers: tempAnswers, namespace: namespace, geometryID: geometryID, animateViewsIn: $animateViewsIn).frame(
+                            width: geo.size.width, height: geo.size.height).onAppear {
+                                animateViewsIn = true
+                            }
+                    }
                 }.foregroundStyle(.white)
 
             }.frame(width: geo.size.width, height: geo.size.height)

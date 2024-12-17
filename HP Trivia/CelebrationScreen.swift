@@ -8,9 +8,14 @@
 import SwiftUI
 
 struct CelebrationScreen: View {
-    @State var tappedCorrectAnswer = false
     @State var scaleButton = false
     @State var moveScore = false
+    @State var animationFinished = false
+    
+    var namespace: Namespace.ID
+    var geometryID: String
+    @Binding var tappedCorrectAnswer: Bool
+    
     
     var body: some View {
         GeometryReader { geo in
@@ -29,7 +34,7 @@ struct CelebrationScreen: View {
                                 }
                             }
                     }
-                }.animation(.easeOut(duration: 1).delay(0.8), value: tappedCorrectAnswer)
+                }.animation(.easeOut(duration: tappedCorrectAnswer ? 1 : 0).delay(tappedCorrectAnswer ? 0.8 : 0), value: tappedCorrectAnswer)
                 Spacer()
                 VStack {
                     if tappedCorrectAnswer {
@@ -37,7 +42,7 @@ struct CelebrationScreen: View {
                             .font(.custom(Constants.hpFont, size: 100))
                             .transition(.scale.combined(with: .offset(y: -geo.size.height / 2)))
                     }
-                }.animation(.easeOut(duration: 1).delay(0.5), value: tappedCorrectAnswer)
+                }.animation(.easeOut(duration: tappedCorrectAnswer ? 1 : 0).delay(tappedCorrectAnswer ? 0.5 : 0), value: tappedCorrectAnswer)
                 Spacer()
                 Text("Answer 1")
                     .padding()
@@ -52,11 +57,12 @@ struct CelebrationScreen: View {
                     .multilineTextAlignment(.center)
                     .minimumScaleFactor(0.5)
                     .transition(.scale(scale: 0))
+                    .matchedGeometryEffect(id: geometryID, in: namespace)
                 Spacer()
                 VStack {
                     if tappedCorrectAnswer {
                         Button {
-                            
+                            tappedCorrectAnswer = false
                         } label: {
                             Text("Next Level >")
                                 .foregroundStyle(.white)
@@ -73,17 +79,22 @@ struct CelebrationScreen: View {
                             }
                         }
                         .transition(.offset(y: geo.size.height / 2))
+                        .disabled(!animationFinished)
                     }
-                }.animation(.easeOut(duration: 1).delay(1), value: tappedCorrectAnswer)
+                }.animation(.easeOut(duration: tappedCorrectAnswer ? 1 : 0).delay(tappedCorrectAnswer ? 1 : 0), value: tappedCorrectAnswer)
                 Spacer()
                 Spacer()
             }.frame(width: geo.size.width, height: geo.size.height)
         }.onAppear {
-            tappedCorrectAnswer = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                animationFinished = true
+            }
         }
     }
 }
 
 #Preview {
-    CelebrationScreen()
+    @Previewable @Namespace var namespace
+    @Previewable @State var tappedCorrectAnswer = true
+    CelebrationScreen(namespace: namespace, geometryID: "correctAnswer", tappedCorrectAnswer: $tappedCorrectAnswer)
 }
