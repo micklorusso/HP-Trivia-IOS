@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct CelebrationScreen: View {
+    @EnvironmentObject private var gameViewModel: GameViewModel
+    
     @State var scaleButton = false
     @State var moveScore = false
     @State var animationFinished = false
@@ -23,7 +25,7 @@ struct CelebrationScreen: View {
                 
                 VStack {
                     if tappedCorrectAnswer {
-                        Text("5")
+                        Text("\(gameViewModel.questionScore)")
                             .font(.largeTitle)
                             .transition(.offset(y: -geo.size.height / 2))
                             .offset(x: moveScore ? geo.size.width / 2 : 0, y: moveScore ? -geo.size.height / 6 : 0)
@@ -44,7 +46,7 @@ struct CelebrationScreen: View {
                     }
                 }.animation(.easeOut(duration: tappedCorrectAnswer ? 1 : 0).delay(tappedCorrectAnswer ? 0.5 : 0), value: tappedCorrectAnswer)
                 Spacer()
-                Text("Answer 1")
+                Text(gameViewModel.currentCorrectAnswer)
                     .padding()
                     .padding(.vertical)
                     .frame(width: geo.size.width * 0.8, height: 150)
@@ -62,6 +64,7 @@ struct CelebrationScreen: View {
                 VStack {
                     if tappedCorrectAnswer {
                         Button {
+                            gameViewModel.nextQuestion()
                             tappedCorrectAnswer = false
                         } label: {
                             Text("Next Level >")
@@ -97,4 +100,5 @@ struct CelebrationScreen: View {
     @Previewable @Namespace var namespace
     @Previewable @State var tappedCorrectAnswer = true
     CelebrationScreen(namespace: namespace, geometryID: "correctAnswer", tappedCorrectAnswer: $tappedCorrectAnswer)
+        .environmentObject(GameViewModel())
 }

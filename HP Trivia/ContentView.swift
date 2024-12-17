@@ -137,7 +137,7 @@ struct ContentView: View {
                 }.frame(height: geo.size.height)
             }.frame(width: geo.size.width, height: geo.size.height)
         }.onAppear {
-            playAudio()
+            // playAudio()
             animateViewsIn = true
         }
         .sheet(isPresented: $showInstructions) {
@@ -149,6 +149,7 @@ struct ContentView: View {
         }
         .fullScreenCover(isPresented: $showGameplay) {
             Gameplay()
+                .environmentObject(gameViewModel)
         }
      
     }
@@ -175,4 +176,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(Store())
+        .environmentObject(GameViewModel())
 }

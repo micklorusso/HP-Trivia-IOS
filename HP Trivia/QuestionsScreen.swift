@@ -9,6 +9,8 @@ import SwiftUI
 import AVKit
 
 struct QuestionsScreen: View {
+    @EnvironmentObject private var gameViewModel: GameViewModel
+    
     @State private var hintWiggle = false
     @State private var animationTimer: Timer?
     @State private var revealHint = false
@@ -16,8 +18,7 @@ struct QuestionsScreen: View {
     @Binding var tappedCorrectAnswer: Bool
     @State var wrongAnswersTapped: [Int] = []
     @State private var soundEffectsPlayer: AVAudioPlayer!
-    
-    let answers: [Bool]
+
     var namespace: Namespace.ID
     var geometryID: String
     @Binding var animateViewsIn: Bool
@@ -28,7 +29,7 @@ struct QuestionsScreen: View {
                 VStack {
                     VStack {
                         if animateViewsIn {
-                            Text("Who is Herry Potter?")
+                            Text(gameViewModel.currentQuestion.question)
                                 .font(.custom(Constants.hpFont, size: 50))
                                 .multilineTextAlignment(.center)
                                 .minimumScaleFactor(0.5)
@@ -42,6 +43,7 @@ struct QuestionsScreen: View {
                         VStack {
                             if animateViewsIn {
                                 Button {
+                                    gameViewModel.usedHint()
                                     revealHint = true
                                     playFlipSound()
                                 } label: {
@@ -64,7 +66,7 @@ struct QuestionsScreen: View {
                                     .offset(x: revealHint ? geo.size.width : 0)
                                     .opacity(revealHint ? 0 : 1)
                                     .overlay(content: {
-                                        Text("The Boy Who _____")
+                                        Text(gameViewModel.currentQuestion.hint)
                                             .font(.title)
                                             .padding(.leading, 30)
                                             .multilineTextAlignment(.center)
@@ -97,6 +99,7 @@ struct QuestionsScreen: View {
                         VStack {
                             if animateViewsIn {
                                 Button {
+                                    gameViewModel.usedHint()
                                     revealBook = true
                                     playFlipSound()
                                 } label: {
@@ -124,7 +127,7 @@ struct QuestionsScreen: View {
                                         )
                                         .opacity(revealBook ? 0 : 1)
                                         .overlay(content: {
-                                            Image("hp1")
+                                            Image("hp\(gameViewModel.currentQuestion.book)")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .frame(height: 150).padding(
@@ -149,12 +152,11 @@ struct QuestionsScreen: View {
                     }.frame(width: geo.size.width)
                     
                     LazyVGrid(columns: [GridItem(), GridItem()]) {
-                        ForEach(0..<4) { i in
+                        ForEach(Array(gameViewModel.currentAnswers.enumerated()), id: \.offset) { i, answer in
                             VStack {
                                 if animateViewsIn {
-                                    
-                                    if answers[i] == true {
-                                        Text("Answer \(i)")
+                                    if gameViewModel.currentCorrectAnswer == answer {
+                                        Text(answer)
                                             .padding()
                                             .padding(.vertical)
                                             .frame(width: geo.size.width / 2.2)
@@ -169,6 +171,7 @@ struct QuestionsScreen: View {
                                             .matchedGeometryEffect(
                                                 id: geometryID, in: namespace)
                                             .onTapGesture {
+                                                gameViewModel.gaveCorrectAnswer()
                                                 playCorrectSound()
                                                 withAnimation(.easeOut(duration: 1)) {
                                                     tappedCorrectAnswer = true
@@ -176,7 +179,7 @@ struct QuestionsScreen: View {
                                                 }
                                             }
                                     } else {
-                                        Text("Answer \(i)")
+                                        Text(answer)
                                             .padding()
                                             .padding(.vertical)
                                             .frame(width: geo.size.width / 2.2)
@@ -188,6 +191,7 @@ struct QuestionsScreen: View {
                                             .transition(.scale(scale: 0))
                                             .scaleEffect(wrongAnswersTapped.contains(i) ? 0.8 : 1)
                                             .onTapGesture {
+                                                gameViewModel.gaveWrongAnswer()
                                                 giveWrongFeedback()
                                                 playWrongSound()
                                                 withAnimation(.easeOut(duration: 1)) {
@@ -201,9 +205,7 @@ struct QuestionsScreen: View {
                             }.animation(
                                 .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 1.5 : 0),
                                 value: animateViewsIn)
-                            
                         }
-                        
                     }.frame(width: geo.size.width)
                         .padding(.top, 30)
                     Spacer()
@@ -242,7 +244,7 @@ struct QuestionsScreen: View {
     @Previewable @State var tappedCorrectAnswer = true
     @Previewable @State var animateViewsIn = true
     QuestionsScreen(
-        tappedCorrectAnswer: $tappedCorrectAnswer,
-        answers: [true, false, false, false], namespace: namespace,
+        tappedCorrectAnswer: $tappedCorrectAnswer, namespace: namespace,
         geometryID: "correctAnswer", animateViewsIn: $animateViewsIn)
+    .environmentObject(GameViewModel())
 }

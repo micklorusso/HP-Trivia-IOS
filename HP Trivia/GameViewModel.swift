@@ -24,6 +24,9 @@ class GameViewModel: ObservableObject {
     @Published var recentScores = [0, 0, 0]
     
     init() {
+        for answer in currentQuestion.answers.keys {
+            currentAnswers.append(answer)
+        }
         decodeQuestions()
     }
     
@@ -59,9 +62,9 @@ class GameViewModel: ObservableObject {
     }
     
     func endGame() {
-        recentScores[0] = gameScore
-        recentScores[1] = recentScores[0]
         recentScores[2] = recentScores[1]
+        recentScores[1] = recentScores[0]
+        recentScores[0] = gameScore
     }
     
     func usedHint() {
@@ -71,6 +74,10 @@ class GameViewModel: ObservableObject {
     func gaveCorrectAnswer() {
         answeredQuestions.append(currentQuestion.id)
         gameScore += questionScore
+    }
+    
+    func gaveWrongAnswer() {
+        questionScore -= 1
     }
     
     func filterQuestions(from bookIDs: [Int]) {

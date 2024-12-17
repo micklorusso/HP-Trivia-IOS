@@ -10,6 +10,9 @@ import AVKit
 
 struct Gameplay: View {
     @Environment(\.dismiss) private var dismiss
+    
+    @EnvironmentObject private var gameViewModel: GameViewModel
+    
     @Namespace private var namespace
     
     @State private var tappedCorrectAnswer = false
@@ -36,6 +39,7 @@ struct Gameplay: View {
                 VStack {
                     HStack {
                         Button {
+                            gameViewModel.endGame()
                             dismiss()
                         } label: {
                             Text("End Game")
@@ -48,7 +52,7 @@ struct Gameplay: View {
 
                         Spacer()
 
-                        Text("Score: 33")
+                        Text("Score: \(gameViewModel.gameScore)")
                             .padding(.trailing)
                     }
                     .frame(width: geo.size.width)
@@ -59,18 +63,20 @@ struct Gameplay: View {
                     if tappedCorrectAnswer {
                         CelebrationScreen(namespace: namespace, geometryID: geometryID, tappedCorrectAnswer: $tappedCorrectAnswer).frame(
                             width: geo.size.width, height: geo.size.height)
+                        .environmentObject(gameViewModel)
                     } else {
-                        QuestionsScreen(tappedCorrectAnswer: $tappedCorrectAnswer, answers: tempAnswers, namespace: namespace, geometryID: geometryID, animateViewsIn: $animateViewsIn).frame(
+                        QuestionsScreen(tappedCorrectAnswer: $tappedCorrectAnswer, namespace: namespace, geometryID: geometryID, animateViewsIn: $animateViewsIn).frame(
                             width: geo.size.width, height: geo.size.height).onAppear {
                                 animateViewsIn = true
                             }
+                            .environmentObject(gameViewModel)
                     }
                 }.foregroundStyle(.white)
 
             }.frame(width: geo.size.width, height: geo.size.height)
 
         }.onAppear {
-            playMusic()
+            // playMusic()
         }
     }
     
@@ -88,4 +94,5 @@ struct Gameplay: View {
 
 #Preview {
     Gameplay()
+        .environmentObject(GameViewModel())
 }
