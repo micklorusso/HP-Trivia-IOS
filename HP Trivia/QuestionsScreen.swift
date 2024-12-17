@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct QuestionsScreen: View {
     @State private var hintWiggle = false
@@ -14,12 +15,13 @@ struct QuestionsScreen: View {
     @State private var revealBook = false
     @Binding var tappedCorrectAnswer: Bool
     @State var wrongAnswersTapped: [Int] = []
-
+    @State private var soundEffectsPlayer: AVAudioPlayer!
+    
     let answers: [Bool]
     var namespace: Namespace.ID
     var geometryID: String
     @Binding var animateViewsIn: Bool
-
+    
     var body: some View {
         GeometryReader { geo in
             VStack {
@@ -35,12 +37,13 @@ struct QuestionsScreen: View {
                     }.animation(
                         .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 1 : 0), value: animateViewsIn)
                     Spacer()
-
+                    
                     HStack {
                         VStack {
                             if animateViewsIn {
                                 Button {
                                     revealHint = true
+                                    playFlipSound()
                                 } label: {
                                     Image(
                                         systemName: "questionmark.square.fill"
@@ -88,13 +91,14 @@ struct QuestionsScreen: View {
                         }.animation(
                             .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 2.3 : 0),
                             value: animateViewsIn)
-
+                        
                         Spacer()
-
+                        
                         VStack {
                             if animateViewsIn {
                                 Button {
                                     revealBook = true
+                                    playFlipSound()
                                 } label: {
                                     Image(systemName: "book.closed")
                                         .resizable()
@@ -130,7 +134,7 @@ struct QuestionsScreen: View {
                                         })
                                         .animation(
                                             .easeInOut(duration: 0.1)
-                                                .repeatCount(9),
+                                            .repeatCount(9),
                                             value: hintWiggle
                                         )
                                         .animation(
@@ -143,12 +147,12 @@ struct QuestionsScreen: View {
                             .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 2.3 : 0),
                             value: animateViewsIn)
                     }.frame(width: geo.size.width)
-
+                    
                     LazyVGrid(columns: [GridItem(), GridItem()]) {
                         ForEach(0..<4) { i in
                             VStack {
                                 if animateViewsIn {
-
+                                    
                                     if answers[i] == true {
                                         Text("Answer \(i)")
                                             .padding()
@@ -165,6 +169,7 @@ struct QuestionsScreen: View {
                                             .matchedGeometryEffect(
                                                 id: geometryID, in: namespace)
                                             .onTapGesture {
+                                                playCorrectSound()
                                                 withAnimation(.easeOut(duration: 1)) {
                                                     tappedCorrectAnswer = true
                                                     animateViewsIn = false
@@ -183,20 +188,22 @@ struct QuestionsScreen: View {
                                             .transition(.scale(scale: 0))
                                             .scaleEffect(wrongAnswersTapped.contains(i) ? 0.8 : 1)
                                             .onTapGesture {
+                                                giveWrongFeedback()
+                                                playWrongSound()
                                                 withAnimation(.easeOut(duration: 1)) {
                                                     wrongAnswersTapped.append(i)
                                                 }
                                             }
                                             .disabled(wrongAnswersTapped.contains(i))
                                     }
-
+                                    
                                 }
                             }.animation(
                                 .easeOut(duration: animateViewsIn ? 1 : 0).delay(animateViewsIn ? 1.5 : 0),
                                 value: animateViewsIn)
-
+                            
                         }
-
+                        
                     }.frame(width: geo.size.width)
                         .padding(.top, 30)
                     Spacer()
@@ -204,6 +211,29 @@ struct QuestionsScreen: View {
             }.frame(width: geo.size.width, height: geo.size.height)
                 .foregroundStyle(.white)
         }
+    }
+    
+    private func playFlipSound() {
+        let sound = Bundle.main.path(forResource: "page-flip", ofType: "mp3")
+        soundEffectsPlayer = try! AVAudioPlayer(contentsOf: URL(filePath: sound!))
+        soundEffectsPlayer.play()
+    }
+    
+    private func playWrongSound() {
+        let sound = Bundle.main.path(forResource: "negative-beeps", ofType: "mp3")
+        soundEffectsPlayer = try! AVAudioPlayer(contentsOf: URL(filePath: sound!))
+        soundEffectsPlayer.play()
+    }
+    
+    private func playCorrectSound() {
+        let sound = Bundle.main.path(forResource: "magic-wand", ofType: "mp3")
+        soundEffectsPlayer = try! AVAudioPlayer(contentsOf: URL(filePath: sound!))
+        soundEffectsPlayer.play()
+    }
+    
+    private func giveWrongFeedback() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.error)
     }
 }
 

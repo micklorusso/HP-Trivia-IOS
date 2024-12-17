@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AVKit
 
 struct Gameplay: View {
     @Environment(\.dismiss) private var dismiss
@@ -13,6 +14,8 @@ struct Gameplay: View {
     
     @State private var tappedCorrectAnswer = false
     @State private var animateViewsIn = false
+    
+    @State private var musicPlayer: AVAudioPlayer!
     
     let geometryID = "correctAnswer"
     
@@ -66,8 +69,21 @@ struct Gameplay: View {
 
             }.frame(width: geo.size.width, height: geo.size.height)
 
+        }.onAppear {
+            playMusic()
         }
     }
+    
+    func playMusic() {
+        let songs = ["let-the-mystery-unfold", "spellcraft", "hiding-place-in-the-forest", "deep-in-the-dell"]
+        let i = Int.random(in: 0...3)
+        let sound = Bundle.main.path(forResource: songs[i], ofType: "mp3")
+        musicPlayer = try! AVAudioPlayer(contentsOf: URL(filePath: sound!))
+        musicPlayer.numberOfLoops = -1
+        musicPlayer.volume = 0.1
+        musicPlayer.play()
+    }
+    
 }
 
 #Preview {
