@@ -23,7 +23,12 @@ class GameViewModel: ObservableObject {
     @Published var questionScore = 5
     @Published var recentScores = [0, 0, 0]
     
+    private let savePath = FileManager.documentsDirectory.appending(path: "SavedScores")
+    
     init() {
+        Task {
+            loadScores()
+        }
         for answer in currentQuestion.answers.keys {
             currentAnswers.append(answer)
         }
@@ -65,6 +70,8 @@ class GameViewModel: ObservableObject {
         recentScores[2] = recentScores[1]
         recentScores[1] = recentScores[0]
         recentScores[0] = gameScore
+        
+        saveScores()
     }
     
     func usedHint() {
@@ -83,6 +90,24 @@ class GameViewModel: ObservableObject {
     func filterQuestions(from bookIDs: [Int]) {
         filteredQuestions = allQuestions.filter { question in
             bookIDs.contains(question.book)
+        }
+    }
+    
+    func loadScores() {
+        do {
+            let data = try Data(contentsOf: savePath)
+            recentScores = try JSONDecoder().decode([Int].self, from: data)
+        } catch {
+            recentScores = [0, 0, 0]
+        }
+    }
+    
+    private func saveScores() {
+        do {
+            let data = try JSONEncoder().encode(recentScores)
+            try data.write(to: savePath)
+        } catch {
+            print("Unable to save data: \(error)")
         }
     }
     

@@ -35,9 +35,11 @@ struct Settings: View {
                                         .shadow(radius: 3)
                                 }.onTapGesture {
                                     store.books[i] = .inactive
+                                    store.saveStatus()
                                 }
                                 .task {
                                     store.books[i] = .active
+                                    store.saveStatus()
                                 }
                             } else if store.books[i] == .inactive {
                                 ZStack(alignment: .bottomTrailing) {
@@ -51,6 +53,7 @@ struct Settings: View {
                                         .shadow(radius: 3)
                                 }.onTapGesture {
                                     store.books[i] = .active
+                                    store.saveStatus()
                                 }
                             } else if store.books[i] == .locked {
                                 ZStack {

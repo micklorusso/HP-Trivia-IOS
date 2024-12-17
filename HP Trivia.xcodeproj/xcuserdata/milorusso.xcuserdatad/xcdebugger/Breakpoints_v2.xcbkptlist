@@ -30,8 +30,8 @@
             filePath = "HP Trivia/Settings.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "65"
-            endingLineNumber = "65"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -46,8 +46,8 @@
             filePath = "HP Trivia/Store.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "73"
-            endingLineNumber = "73"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "checkPurchased()"
             landmarkType = "7">
          </BreakpointContent>

@@ -8,7 +8,7 @@
 import StoreKit
 import SwiftUI
 
-enum BookStatus {
+enum BookStatus: Codable {
     case active
     case inactive
     case locked
@@ -27,10 +27,13 @@ class Store: ObservableObject {
     @Published var purchasedProductIDs = Set<String>()
 
     private var updates: Task<Void, Never>? = nil
+    
+    private let savePath = FileManager.documentsDirectory.appending(path: "SavedBooksStatus")
 
     init() {
         Task {
             await loadProducts()
+            loadStatus()
         }
         updates = watchForUpdates()
     }
@@ -66,6 +69,24 @@ class Store: ObservableObject {
             }
         } catch {
             print("Purchase failed: \(error.localizedDescription)")
+        }
+    }
+    
+    func loadStatus() {
+        do {
+            let data = try Data(contentsOf: savePath)
+            books = try JSONDecoder().decode([BookStatus].self, from: data)
+        } catch {
+            print("Could not load book statuses")
+        }
+    }
+    
+    func saveStatus() {
+        do {
+            let data = try JSONEncoder().encode(books)
+            try data.write(to: savePath)
+        } catch {
+            print("Unable to save data")
         }
     }
 
