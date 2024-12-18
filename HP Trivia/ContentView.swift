@@ -152,7 +152,7 @@ struct ContentView: View {
                         .foregroundStyle(.white)
 
                     if !store.books.contains(.active) {
-                        Text("No questions available. Go to settings. ⬆️")
+                        Text("No questions available. Go to settings. ⬆️").foregroundStyle(.white)
                     }
                     Spacer()
                 }.frame(height: geo.size.height)
